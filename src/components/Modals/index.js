@@ -1,10 +1,13 @@
+/* eslint-disable no-undef */
 import React, { useContext, useState } from 'react';
 import axios from 'axios';
 
-import AuthContext from '../../auth-context';
+import { AuthData } from '../../context/auth-context';
 
 const ModalUser = (props) => {
-  const { token } = useContext(AuthContext);
+  const { token } = useContext(AuthData);
+  const [message, setMessage] = useState(null);
+  const [showMessage, setShowMessage] = useState(false);
   const [form, setForm] = useState({
     name: '',
     apellidoP: '',
@@ -26,7 +29,7 @@ const ModalUser = (props) => {
     const data = {
       Tenant: null,
       UserName: form.user,
-      Password: form.passConfirm,
+      Password: form.pass,
       Name: form.name,
       FatherLastName: form.apellidoM,
       MotherLastName: form.apellidoP,
@@ -38,16 +41,37 @@ const ModalUser = (props) => {
 
     axios.post(
       'https://techhub.docsolutions.com/OnBoardingPre/WebApi/api/user/RegisterUserRole',
-      data,
+      {
+        Body: data
+      },
       {
         headers: {
-          'Authorization': `Bearer ${token}`
-        }
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+          Authorization: `Bearer ${token}`
+        },
       }
     ).then((res) => {
-      console.log(res);
+      if (!res?.data?.IsOk) {
+        setMessage(res.data.Messages);
+        setShowMessage(true);
+      } else {
+        setMessage(null);
+        setShowMessage(false);
+        setForm({
+          name: '',
+          apellidoP: '',
+          apellidoM: '',
+          email: '',
+          telefono: '',
+          user: '',
+          pass: '',
+          passConfirm: '',
+        });
+      }
     }).catch((err) => {
-      console.log(err);
+      setMessage(err.message);
+      setShowMessage(true);
     });
   }
   return (
@@ -73,6 +97,13 @@ const ModalUser = (props) => {
                 data-bs-dismiss='modal'
                 aria-label='Close'
               ></button>
+          </div>
+          <div className='modal-body'>
+            {showMessage && (
+              <div className='alert alert-warning' role='alert'>
+                {message}
+              </div>
+            )}
           </div>
           <div className='modal-body'>
             <form noValidate onSubmit={onSubmit}>
@@ -181,25 +212,9 @@ const ModalUser = (props) => {
                 <div className='col-sm-9'>
                   <input
                     type='text'
-                    name='password'
+                    name='pass'
                     className='form-control'
                     value={form.pass}
-                    onChange={onChange}
-                  />
-                </div>
-              </div>
-              <div className='row mb-3'>
-                <label
-                  className='col-sm-3 col-form-label'
-                >
-                  Password:
-                </label>
-                <div className='col-sm-9'>
-                  <input
-                    type='text'
-                    name='passConfirm'
-                    className='form-control'
-                    value={form.passConfirm}
                     onChange={onChange}
                   />
                 </div>
@@ -207,7 +222,13 @@ const ModalUser = (props) => {
             </form>
           </div>
           <div className='modal-footer'>
-            <button type='button' className='btn btn-primary'>Guardar</button>
+            <button
+              type='button'
+              onClick={onSubmit}
+              className='btn btn-primary'
+            >
+              Guardar
+            </button>
           </div>
         </div>
       </div>

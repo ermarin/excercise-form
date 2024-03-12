@@ -3,12 +3,11 @@ import axios from 'axios';
 
 import { useNavigate } from 'react-router-dom';
 
-import AuthContext from '../../auth-context';
+import { AuthData } from '../../context/auth-context';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { token } = useContext(AuthContext);
-  console.log(token);
+  const { setToken } = useContext(AuthData);
 
   const [user, setUser] = useState({
     name: '',
@@ -30,11 +29,22 @@ const Login = () => {
 
     axios
       .post('https://techhub.docsolutions.com/OnBoardingPre/WebApi/api/authentication/authentication',
-        data
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Accept: 'application/json',
+          },
+          Body: data
+        }
       )
       .then((res) => {
-        console.log(res);
-        !res.data.IsOK ? setShow(true) : navigate('/list-users');
+        if (!res.data.IsOK) {
+          setShow(true)
+        }
+        else {
+          setToken(res?.data?.Body?.Token);
+          navigate('/list-users');
+        }
       })
       .catch((err) => {
         console.log(err);
@@ -72,7 +82,7 @@ const Login = () => {
             </div>
             <button
               type='submit'
-              className='btn btn-outline-warning btn-block mt-4 mb-4 w-100'
+              className='btn btn-outline-primary btn-block mt-4 mb-4 w-100'
             >
                 OK
               </button>

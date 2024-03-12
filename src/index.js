@@ -8,8 +8,8 @@ import reportWebVitals from './reportWebVitals';
 import 'bootstrap/dist/css/bootstrap.min.css'
 import 'bootstrap/dist/js/bootstrap.bundle.min'
 
-import Login from './context/components/Login';
-import ListUsers from './context/components/ListUsers';
+import Login from './components/Login';
+import ListUsers from './components/ListUsers';
 
 const router = createBrowserRouter([
   { path: '/', element: <Login /> },
@@ -19,9 +19,9 @@ const router = createBrowserRouter([
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
-    <AuthContext.Provider value={{ token: null }}>
+    <AuthContext>
       <RouterProvider router={router} />
-    </AuthContext.Provider>
+    </AuthContext>
   </React.StrictMode>
 );
 
