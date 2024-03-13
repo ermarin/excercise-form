@@ -46,7 +46,7 @@ const ListUsers = () => {
 
   return (
     <div className='container p-5'>
-      <ModalUser id='formModal' />
+      <ModalUser id='formModal' success={false} />
       <div className='row mb-5 align-items-center'>
         <div className='col-md-6'>
           <form className='row' noValidate onSubmit={onSubmit}>
@@ -82,18 +82,18 @@ const ListUsers = () => {
           </button>
         </div>
       </div>
-      {list.length > 0 ? (
-        <table className='table table-striped'>
-          <thead>
-            <tr>
-              <th scope='col'>Username</th>
-              <th scope='col'>Name</th>
-              <th scope='col'>FatherLastName</th>
-              <th scope='col'>CreationDate</th>
-              <th scope='col'>Email</th>
-              <th scope='col'>PhoneNumber</th>
-            </tr>
-          </thead>
+      <table className='table table-striped table-hover'>
+        <thead>
+          <tr>
+            <th scope='col'>Username</th>
+            <th scope='col'>Name</th>
+            <th scope='col'>FatherLastName</th>
+            <th scope='col'>CreationDate</th>
+            <th scope='col'>Email</th>
+            <th scope='col'>PhoneNumber</th>
+          </tr>
+        </thead>
+        {list?.length > 0 ? (
           <tbody>
             {list?.map((list, key) => {
               return (
@@ -101,7 +101,6 @@ const ListUsers = () => {
                   <th scope='row'>{list.Id}</th>
                   <td>{list.Name}</td>
                   <td>{list.FatherLastName}</td>
-                  <td>{list.MotherLastName}</td>
                   <td>{list.CreationDate}</td>
                   <td>{list.Email}</td>
                   <td>{list.PhoneNumber}</td>
@@ -109,14 +108,21 @@ const ListUsers = () => {
               )
             })}
           </tbody>
-        </table>
-      ) : (
-        <div className='col-md-12 alert alert-secondary'>
-          Realiza una busqueda por nombre
-        </div>
-      )}
+        ) : (
+          <tr>
+            <td colSpan={7}>
+              <div className='alert alert-secondary'>
+                Realiza una busqueda por nombre
+              </div>
+            </td>
+          </tr>
+        )}
+      </table>
       {messageError && (
-        <div className='alert alert-danger'>
+        <div
+          className='alert alert-danger alert-dismissible fade show'
+          role='alert'
+        >
           {messageError}
         </div>
       )}
